@@ -4,14 +4,11 @@ module.exports.create = async function (req, res, next) {
         if (!data) {
             return res.badRequest({}, `${req.crudModelName} : Record not created`);
         }
-        req.responseStatusCode = 201;
-        req.responseJson = {
-            success: true,
+        req.responseJSON = {
+            type: "ok",
             message: `Successfully Created ${req.crudModel.collection.collectionName.slice(0, -1)}`,
             data,
         };
-        req.updateStatus = req.hasOwnProperty("updateStatus") ? req.updateStatus : {};
-        req.updateStatus[req.crudModelName.toLowerCase()] = data;
         next();
     } catch (error) {
         return res.internalError(error);

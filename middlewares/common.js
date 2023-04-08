@@ -12,7 +12,7 @@ async function before(req, res, next) {
             }
         }
     } catch (error) {
-        return res.internalError()
+        return res.internalError();
     }
     next();
 }
@@ -30,13 +30,14 @@ async function after(req, res, next) {
             }
         }
     } catch (error) {
-        return res.internalError()
+        return res.internalError();
     }
     next();
 }
 
 function sendResponse(req, res) {
-    return res.status(req.responseStatusCode).json(req.responseJson);
+    let { type, message, data } = req.responseJSON;
+    return res[type](data, message);
 }
 
 module.exports = { after, before, sendResponse };

@@ -3,18 +3,18 @@ const apiRoute = express.Router();
 
 const { before, after, sendResponse } = require("../middlewares/common");
 
-const get = require("./get");
-apiRoute.get("/", get.getAll);
-apiRoute.get("/:_id", get.getById);
+const { getAll, getById } = require("./get");
+apiRoute.get("/", getAll);
+apiRoute.get("/:_id", getById);
 
-const post = require("./post");
-apiRoute.post("/", before, post.create, after, sendResponse);
+const { create } = require("./post");
+apiRoute.post("/", before, create, after, sendResponse);
 
-const put = require("./put");
-apiRoute.put("/:_id", before, put.update, after, sendResponse);
+const { create } = require("./put");
+apiRoute.put("/:_id", before, update, after, sendResponse);
 
-const remove = require("./delete");
-apiRoute.delete("/:_id", remove.softDelete);
-apiRoute.delete("/hard/:_id", remove.hardDelete);
+const { softDelete, hardDelete } = require("./delete");
+apiRoute.delete("/:_id", softDelete);
+apiRoute.delete("/hard/:_id", hardDelete);
 
 module.exports = apiRoute;
