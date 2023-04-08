@@ -10,7 +10,7 @@ apiRoute.get("/:_id", getById);
 const { create } = require("./post");
 apiRoute.post("/", before, create, after, sendResponse);
 
-const { create } = require("./put");
+const { update } = require("./put");
 apiRoute.put("/:_id", before, update, after, sendResponse);
 
 const { softDelete, hardDelete } = require("./delete");
