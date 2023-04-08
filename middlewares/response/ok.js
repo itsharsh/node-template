@@ -4,8 +4,9 @@ module.exports = function (data = [], message = "", status = 200) {
     let resData = {
         timestamp: moment().unix(),
         success: true,
-        message: message,
-        data,
+        message,
+        total: (data && Array.isArray(data) && data?.length) || undefined,
+        data: data || undefined,
     };
     if (data?.data) {
         Object.assign(resData, data);
