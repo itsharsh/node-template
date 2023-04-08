@@ -1,12 +1,10 @@
-const modelConfig = require("../../../models/config");
-
 module.exports.getAll = async function (req, res) {
     try {
+        let modelConfig = req.crudModel.schema.obj;
         let condition = { isActive: true };
-        console.log(req.crudModel)
         let data = await req.crudModel.find(condition).populate(getReferencedSchema(req));
         return res.ok(
-            { data, total: data.length, modelConfig: modelConfig[req.crudModelName] },
+            { data, total: data.length, modelConfig },
             `Successfully fetched all ${req.crudModel.collection.collectionName.slice(0, -1)}(s)`
         );
     } catch (error) {
