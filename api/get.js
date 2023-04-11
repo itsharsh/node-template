@@ -1,10 +1,9 @@
 module.exports.getAll = async function (req, res) {
     try {
-        let modelConfig = req.crudModel.schema.obj;
         let condition = { isActive: true };
         let data = await req.crudModel.find(condition).populate(getReferencedSchema(req));
         return res.ok(
-            { data, total: data.length, modelConfig },
+            { data, total: data.length },
             `Successfully fetched all ${req.crudModel.collection.collectionName.slice(0, -1)}(s)`
         );
     } catch (error) {
