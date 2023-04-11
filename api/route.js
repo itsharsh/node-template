@@ -4,8 +4,14 @@ const apiRoute = express.Router();
 const { before, after, sendResponse } = require("../middlewares/common");
 
 const { getAll, getById } = require("./get");
-apiRoute.get("/", getAll);
+apiRoute.get("/model-config", (req, res, next) => {
+  let modelConfig = req.crudModel.schema.obj;
+  Object.keys(modelConfig).map(k=>{
+    delete modelConfig[k].type;
+  })    
+});
 apiRoute.get("/:_id", getById);
+apiRoute.get("/", getAll);
 
 const { create } = require("./post");
 apiRoute.post("/", before, create, after, sendResponse);
