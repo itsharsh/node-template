@@ -3,14 +3,10 @@ const apiRoute = express.Router();
 
 const { before, after, sendResponse } = require("../middlewares/common");
 
+const modelConfig = require("./model-config");
+apiRoute.get("/model-config", modelConfig);
+
 const { getAll, getById } = require("./get");
-apiRoute.get("/model-config", (req, res) => {
-    let modelConfig = req.crudModel.schema.obj;
-    Object.keys(modelConfig).map(k=>{
-        delete modelConfig[k].type;
-    })
-    return res.ok(modelConfig)
-});
 apiRoute.get("/:_id", getById);
 apiRoute.get("/", getAll);
 
