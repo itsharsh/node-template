@@ -12,7 +12,7 @@ module.exports = async (app) => {
     app.use(require("./middlewares"));
 
     app.get("/", (req, res) => res.ok(null, "App Working"));
-    app.get(`/healthcheck`, (req, res) => res.ok(null, `[HealthCheck]: App working`));
+    app.get(`/health-check`, (req, res) => res.ok(null, `[HealthCheck]: App working`));
 
 
     app.use(require("./api"));
