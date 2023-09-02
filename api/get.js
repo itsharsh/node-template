@@ -43,7 +43,7 @@ function getReferencedSchema(body, model) {
             referencedKey &&
                 referencedSchema.push({
                     path: e,
-                    model: model.schema.obj[e].ref,
+                    model: referencedKey.ref,
                     select: body?.populateSelect[e] || "",
                 });
         });
