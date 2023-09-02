@@ -4,7 +4,7 @@ module.exports.getAll = async function (req, res) {
         let data = await req.crudModel.find(condition).populate(getReferencedSchema(req));
         return res.ok(
             { data, total: data.length },
-            `Successfully fetched all ${req.crudModel.collection.collectionName.slice(0, -1)}(s)`
+            `Successfully fetched all ${req.crudModel.collection.collectionName.slice(0, -1)}(s)`,
         );
     } catch (error) {
         return res.internalError(error, `${req.crudModelName} :  ${error.message}`);
@@ -28,14 +28,15 @@ module.exports.getById = async function (req, res) {
 function getReferencedSchema(req) {
     let model = req.crudModel;
     let referencedSchema = "";
-    if (req.query.populate == "true") {
+    if (req?.query?.populate == "true" || req?.query?.populateKeys) {
+        const populateKeys = req.query?.populateKeys?.split(",");
         referencedSchema = Object.keys(model.schema.obj)
             .map((e) =>
                 Array.isArray(model.schema.obj[e])
                     ? model.schema.obj[e][0].hasOwnProperty("ref") && e
-                    : model.schema.obj[e].hasOwnProperty("ref") && e
+                    : model.schema.obj[e].hasOwnProperty("ref") && e,
             )
-            .filter((e) => e)
+            .filter((e) => (populateKeys?.length ? populateKeys.includes(e) : e))
             .join(" ");
     }
     return referencedSchema;
