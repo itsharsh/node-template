@@ -1,7 +1,7 @@
 module.exports.getAll = async function (req, res) {
     try {
         let condition = { isActive: true };
-        let data = await req.crudModel.find(condition).populate(getReferencedSchema(req));
+        const data = await req.crudModel.find(condition).populate(getReferencedSchema(req)).lean();
         return res.ok(
             { data, total: data.length },
             `Successfully fetched all ${req.crudModel.collection.collectionName.slice(0, -1)}(s)`,
@@ -15,7 +15,7 @@ module.exports.getById = async function (req, res) {
     try {
         let condition = { isActive: true };
         Object.assign(condition, { _id: req.params._id });
-        let data = await req.crudModel.findOne(condition).populate(getReferencedSchema(req));
+        const data = await req.crudModel.findOne(condition).populate(getReferencedSchema(req)).lean();
         if (!data) {
             return res.status(400).json({ success: false, message: "Data not found", total: 0, data: [] });
         }
@@ -26,8 +26,8 @@ module.exports.getById = async function (req, res) {
 };
 
 function getReferencedSchema(req) {
-    let model = req.crudModel;
     let referencedSchema = "";
+    const model = req.crudModel;
     if (req?.query?.populate == "true" || req?.query?.populateKeys) {
         const populateKeys = req.query?.populateKeys?.split(",");
         referencedSchema = Object.keys(model.schema.obj)
