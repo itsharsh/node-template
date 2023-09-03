@@ -1,42 +1,42 @@
-let middlewares = {};
+let middlewares = require("../../../middlewares/");
 async function before(req, res, next) {
-    let position = "before";
+    const position = "before";
     try {
-        if (
-            middlewares[req.crudModelName] &&
-            middlewares[req.crudModelName][req.method] &&
-            middlewares[req.crudModelName][req.method][position]
-        ) {
-            for (let eachMiddleware of middlewares[req.crudModelName][req.method][position]) {
-                await eachMiddleware(req, res);
+        if (middlewares[req.crudModelName]?.[req.method]?.[position]) {
+            for (const eachMiddleware of middlewares[req.crudModelName][req.method][position]) {
+                try {
+                    await eachMiddleware(req, res, next);
+                } catch (error) {
+                    return res.badRequest(error);
+                }
             }
         }
     } catch (error) {
-        return res.internalError();
+        return res.internalError(error);
     }
     next();
 }
 
 async function after(req, res, next) {
     try {
-        let position = "after";
-        if (
-            middlewares[req.crudModelName] &&
-            middlewares[req.crudModelName][req.method] &&
-            middlewares[req.crudModelName][req.method][position]
-        ) {
-            for (let eachMiddleware of middlewares[req.crudModelName][req.method][position]) {
-                await eachMiddleware(req, res);
+        const position = "after";
+        if (middlewares[req.crudModelName]?.[req.method]?.[position]) {
+            for (const eachMiddleware of middlewares[req.crudModelName][req.method][position]) {
+                try {
+                    await eachMiddleware(req, res, next);
+                } catch (error) {
+                    return res.badRequest(error);
+                }
             }
         }
     } catch (error) {
-        return res.internalError();
+        return res.internalError(error);
     }
     next();
 }
 
 function sendResponse(req, res) {
-    let { type, message, data } = req.responseJSON;
+    const { type, message, data } = req.responseJSON;
     return res[type](data, message);
 }
 
