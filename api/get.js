@@ -1,7 +1,16 @@
+exports.getFilter = async function (req, res, next) {
+    const filters = { isActive: true };
+    let query = req.query;
+    query?.filters && Object.assign(filters, JSON.parse(query?.filters));
+    req.filters = filters;
+    req.query = query;
+    next();
+};
+
 exports.getAll = async function (req, res) {
     try {
         const model = req.crudModel;
-        const filters = getFilters(req.query);
+        const filters = req.filters;
         const populateData = getReferencedSchema(req.query, model);
         const data = await req.crudModel.find(filters).populate(populateData).lean();
         return res.ok(
@@ -15,8 +24,7 @@ exports.getAll = async function (req, res) {
 
 exports.getById = async function (req, res) {
     try {
-        const filters = { isActive: true };
-        Object.assign(filters, { _id: req.params._id });
+        const filters = req.filters;
         const data = await req.crudModel.findOne(filters).populate(getReferencedSchema(req)).lean();
         if (!data) {
             return res.status(400).json({ success: false, message: "Data not found", total: 0, data: [] });
@@ -27,21 +35,12 @@ exports.getById = async function (req, res) {
     }
 };
 
-function getFilters(query) {
-    if (!query.filters) {
-        return {};
-    }
-    const filters = { isActive: true };
-    query?.filters && Object.assign(filters, JSON.parse(query?.filters));
-    return filters;
-}
-
 function getReferencedSchema(query, model) {
     const referencedSchema = [];
     if (query?.populate == "true" || query?.populateKeys) {
         const shouldPopulate = query?.populate == "true";
         const populateKeys = query?.populateKeys?.split(",");
-        const populateSelect = JSON.parse(query?.populateSelect);
+        const populateSelect = query?.populateSelect ? JSON.parse(query?.populateSelect) : {};
         Object.keys(model.schema.obj).forEach((e) => {
             const referencedKey = Array.isArray(model.schema.obj[e])
                 ? model.schema.obj[e][0].hasOwnProperty("ref") && model.schema.obj[e][0]

@@ -6,9 +6,9 @@ const { before, after, sendResponse } = require("../middlewares/common");
 const modelConfig = require("./model-config");
 apiRoute.get("/model-config", modelConfig);
 
-const { getAll, getById } = require("./get");
-apiRoute.get("/:_id", getById);
-apiRoute.get("/", getAll);
+const { getAll, getById, getFilter } = require("./get");
+apiRoute.get("/:_id", getFilter, getById);
+apiRoute.get("/", getFilter, getAll);
 
 const { create } = require("./post");
 apiRoute.post("/", before, create, after, sendResponse);
