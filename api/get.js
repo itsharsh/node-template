@@ -1,8 +1,8 @@
 exports.getAll = async function (req, res) {
     try {
         const model = req.crudModel;
-        const filters = getFilters(req.body);
-        const populateData = getReferencedSchema(req.body, model);
+        const filters = getFilters(req.query);
+        const populateData = getReferencedSchema(req.query, model);
         const data = await req.crudModel.find(filters).populate(populateData).lean();
         return res.ok(
             { data, total: data.length },
@@ -27,24 +27,31 @@ exports.getById = async function (req, res) {
     }
 };
 
-function getFilters(body) {
+function getFilters(query) {
+    if (!query.filters) {
+        return {};
+    }
     const filters = { isActive: true };
-    body?.filters && Object.assign(filters, body.filters);
+    query?.filters && Object.assign(filters, JSON.parse(query?.filters));
     return filters;
 }
 
-function getReferencedSchema(body, model) {
+function getReferencedSchema(query, model) {
     const referencedSchema = [];
-    if (body?.populate == "true" || body?.populateKeys) {
+    if (query?.populate == "true" || query?.populateKeys) {
+        const shouldPopulate = query?.populate == "true";
+        const populateKeys = query?.populateKeys?.split(",");
+        const populateSelect = JSON.parse(query?.populateSelect);
         Object.keys(model.schema.obj).forEach((e) => {
             const referencedKey = Array.isArray(model.schema.obj[e])
                 ? model.schema.obj[e][0].hasOwnProperty("ref") && model.schema.obj[e][0]
                 : model.schema.obj[e].hasOwnProperty("ref") && model.schema.obj[e];
             referencedKey &&
+                (populateKeys ? populateKeys.includes(e) : shouldPopulate) &&
                 referencedSchema.push({
                     path: e,
                     model: referencedKey.ref,
-                    select: body?.populateSelect[e] || "",
+                    select: populateSelect[e] || "",
                 });
         });
     }
