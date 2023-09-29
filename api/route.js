@@ -4,7 +4,7 @@ const apiRoute = express.Router();
 const { before, after, sendResponse } = require("../middlewares/common");
 
 const modelConfig = require("./model-config");
-apiRoute.get("/model-config", modelConfig);
+apiRoute.get("/model-config", before, modelConfig, after, sendResponse);
 
 const { getAll, getById, getFilter } = require("./get");
 apiRoute.get("/:_id", getFilter, getById);

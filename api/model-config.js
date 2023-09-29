@@ -1,11 +1,20 @@
-module.exports = (req, res) => {
-    let modelConfig = { ...(req?.crudModel?.schema?.tree || req?.crudModel?.tree) };
-    let dataToSend = [];
-    Object.keys(modelConfig).forEach((k) => {
-        delete modelConfig[k].type;
-        modelConfig[k].config && (modelConfig[k].config.key = k);
-        dataToSend.push(modelConfig[k]);
-        !modelConfig[k]?.config?.inputType && delete modelConfig[k] && dataToSend.pop();
-    });
-    return res.ok(dataToSend, `Successfully fetched model config for ${req.crudModel.modelName}`);
+module.exports = (req, res, next) => {
+    try {
+        let modelConfig = { ...(req?.crudModel?.schema?.tree || req?.crudModel?.tree) };
+        let data = [];
+        Object.keys(modelConfig).forEach((k) => {
+            delete modelConfig[k].type;
+            modelConfig[k].config && (modelConfig[k].config.key = k);
+            data.push(modelConfig[k]);
+            !modelConfig[k]?.config?.inputType && delete modelConfig[k] && data.pop();
+        });
+        req.responseJSON = {
+            type: "ok",
+            message: `Successfully fetched model config for ${req.crudModel.modelName}`,
+            data,
+        };
+        return next();
+    } catch (error) {
+        return res.internalError(error);
+    }
 };
