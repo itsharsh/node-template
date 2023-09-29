@@ -1,5 +1,5 @@
 module.exports = (req, res) => {
-    let modelConfig = JSON.parse(JSON.stringify(req.crudModel.schema.obj));
+    let modelConfig = { ...(req?.crudModel?.schema?.tree || req?.crudModel?.tree) };
     let dataToSend = [];
     Object.keys(modelConfig).forEach((k) => {
         delete modelConfig[k].type;
