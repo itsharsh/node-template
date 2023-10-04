@@ -13,6 +13,7 @@ async function connectDB() {
             dbName = dbName[dbName.length - 1].split("?")[0];
         } catch (error) {}
         console.log("Database connected - ", dbName);
+        mongoose.set("overwriteModels", true);
     } catch (error) {
         console.log(` ----------------------------------------------`);
         console.log(`file: dbConnection.js ~ line 19 ~ error`, error.message);
